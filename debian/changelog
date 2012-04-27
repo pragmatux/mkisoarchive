@@ -1,5 +1,5 @@
-mkisoarchive (1.0.1) unstable; urgency=low
+mkisoarchive (1.0.2) unstable; urgency=low
 
   * Initial Release.
 
- -- Ryan Kuester <rkuester@insymbols.com>  Fri, 27 Apr 2012 17:08:19 +0000
+ -- Ryan Kuester <rkuester@insymbols.com>  Fri, 27 Apr 2012 21:15:29 +0000
