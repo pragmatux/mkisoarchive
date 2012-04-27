@@ -32,7 +32,7 @@ add_packages () {
 }
 
 exec >/dev/null
-temp_archive=$(mktemp -d --tmpdir $0.XXXXXXXXXX)/archive
+temp_archive=$(mktemp -d --tmpdir $(basename $0).XXXXXXXXXX)/archive
 trap "rm -rf $temp_archive" EXIT
 init_archive $temp_archive
 add_packages $temp_archive $PACKAGES
