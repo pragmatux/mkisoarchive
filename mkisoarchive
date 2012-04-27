@@ -1,0 +1,38 @@
+#!/bin/sh -e
+usage="Usage: $(basename $0) OUTPUT PACKAGE..."
+shorthelp=\
+"Create an iso image containing a debian archive named \"archive\"
+containing PACKAGEs."
+help=\
+"Miscellaneous notes:
+ * The dist is \"master\"
+ * The arch is \"armel\"
+ * The component name is name \"main\""
+
+test $# -ge 2 || { echo -e "$usage\n$shorthelp\n\n$help" >&2; exit 1; }
+OUTPUT=$1; shift
+test ! -e $OUTPUT || { echo "Error: refusing to overwrite $OUTPUT"; exit 1; }
+PACKAGES=$@
+DIST=master
+
+init_archive () {
+	archive=$1
+	mkdir -p $archive/conf
+	cat >$archive/conf/distributions <<-END
+	Codename: $DIST
+	Components: main
+	Architectures: armel
+	END
+}
+
+add_packages () {
+	archive=$1; shift
+	packages=$@
+	reprepro -b $archive includedeb $DIST $packages >/dev/null
+}
+
+temp_archive=$(mktemp -d --tmpdir $0.XXXXXXXXXX)
+trap "rm -rf $temp_archive" EXIT
+init_archive $temp_archive
+add_packages $temp_archive $PACKAGES
+genisoimage -o $OUTPUT -r $temp_archive
