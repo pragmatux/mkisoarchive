@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
 
 Package: mkisoarchive
-Architecture: any
+Architecture: all
 Depends: reprepro, genisoimage, ${misc:Depends}
 Description: make iso debian archive
  This is part of the Pragmatux software update system.  It creates an ISO image
