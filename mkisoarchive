@@ -28,11 +28,13 @@ init_archive () {
 add_packages () {
 	archive=$1; shift
 	packages=$@
-	reprepro -b $archive includedeb $DIST $packages >/dev/null
+	reprepro -b $archive includedeb $DIST $packages
 }
 
-temp_archive=$(mktemp -d --tmpdir $0.XXXXXXXXXX)
+exec >/dev/null
+temp_archive=$(mktemp -d --tmpdir $0.XXXXXXXXXX)/archive
 trap "rm -rf $temp_archive" EXIT
 init_archive $temp_archive
 add_packages $temp_archive $PACKAGES
-genisoimage -o $OUTPUT -r $temp_archive
+genisoimage -quiet -o $OUTPUT -V "Debian package archive" -r \
+	$(dirname $temp_archive)
