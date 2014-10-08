@@ -1,5 +1,11 @@
-mkisoarchive (1.0.2) unstable; urgency=low
+mkisoarchive (0) UNRELEASED; urgency=low
 
-  * Initial Release.
+  NOTE this changelog is generated from git history when the
+  source package is built. Any change made to this file will be
+  overwritten. Do not commit the generated file to git.
 
- -- Ryan Kuester <rkuester@insymbols.com>  Fri, 27 Apr 2012 21:15:29 +0000
+  The package name above is significant and must be maintained,
+  as several debian tools (e.g., from the devscripts package)
+  read the changelog.
+
+ -- Generated <an@example.com>  Thu, 01 Jan 1970 00:00:00 +0000
