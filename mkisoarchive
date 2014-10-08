@@ -6,7 +6,6 @@ containing PACKAGEs."
 help=\
 "Miscellaneous notes:
  * The dist is \"master\"
- * The arch is \"armel\"
  * The component name is name \"main\""
 
 test $# -ge 2 || { echo -e "$usage\n$shorthelp\n\n$help" >&2; exit 1; }
@@ -21,7 +20,7 @@ init_archive () {
 	cat >$archive/conf/distributions <<-END
 	Codename: $DIST
 	Components: main
-	Architectures: armel
+	Architectures: source armhf armel amd64 mips
 	END
 }
 
@@ -36,5 +35,5 @@ temp_archive=$(mktemp -d --tmpdir $(basename $0).XXXXXXXXXX)/archive
 trap "rm -rf $temp_archive" EXIT
 init_archive $temp_archive
 add_packages $temp_archive $PACKAGES
-genisoimage -quiet -o $OUTPUT -V "Debian package archive" -r \
+genisoimage -quiet -o $OUTPUT -V "APT package source" -r \
 	$(dirname $temp_archive)
