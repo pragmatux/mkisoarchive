@@ -21,6 +21,7 @@ init_archive () {
 	Codename: $DIST
 	Components: main
 	Architectures: source armhf armel amd64 mips
+	Label: Pragmatux
 	END
 }
 
