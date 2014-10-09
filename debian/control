@@ -4,6 +4,8 @@ Priority: extra
 Maintainer: Ryan Kuester <rkuester@insymbols.com>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
+Vcs-Git: https://github.com/pragmatux/mkisoarchive.git
+Vcs-Browser: https://github.com/pragmatux/mkisoarchive
 
 Package: mkisoarchive
 Architecture: all
