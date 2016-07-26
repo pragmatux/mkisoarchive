@@ -1,40 +1,86 @@
 #!/bin/sh -e
-usage="Usage: $(basename $0) OUTPUT PACKAGE..."
+usage="Usage: $(basename $0) [-i PACKAGE] OUTPUT [PACKAGE...]"
 shorthelp=\
 "Create an iso image containing a debian archive named \"archive\"
 containing PACKAGEs."
-help=\
-"Miscellaneous notes:
- * The dist is \"master\"
- * The component name is name \"main\""
+help="\
+Options:
+ -i PACKAGE  Install PACKAGE by forcing it into section \"auto-install\".
+             May be repeated to install multiple packages.
 
-test $# -ge 2 || { echo -e "$usage\n$shorthelp\n\n$help" >&2; exit 1; }
-OUTPUT=$1; shift
-test ! -e $OUTPUT || { echo "Error: refusing to overwrite $OUTPUT"; exit 1; }
-PACKAGES=$@
-DIST=master
+Notes:
+ * The dist is named \"master\"
+ * The component is named \"main\""
+
+fail ()
+{
+	if [ -n "$1" ]; then
+		msg="$1"
+	else
+		msg="$usage\n$shorthelp\n\n$help"
+	fi
+
+	echo "$msg" >&2
+	exit 1
+}
+
+while [ "$#" -gt 0 ]; do
+case "$#,$1,$2" in
+	*,-i,?*)
+		install="$install $2"
+		shift
+		shift
+		;;
+
+	*,-*,*)
+		fail
+		;;
+
+	*,*,*)
+		if [ -z "$output" ]; then
+			output=$1
+		else
+			main="$main $1"
+		fi
+		shift
+		;;
+esac
+done
+
+test -n "$output" || fail
+test ! -e $output || fail "Error: refusing to overwrite $output"
+test -n "$install$main" || fail
+
+dist=master
 
 init_archive () {
 	archive=$1
 	mkdir -p $archive/conf
 	cat >$archive/conf/distributions <<-END
-	Codename: $DIST
+	Codename: $dist
 	Components: main
 	Architectures: source armhf armel amd64 mips
 	Label: Pragmatux
 	END
 }
 
-add_packages () {
-	archive=$1; shift
-	packages=$@
-	reprepro -b $archive includedeb $DIST $packages
+add_main_packages () {
+	_archive=$1; shift
+	_packages=$@
+	reprepro -b $_archive includedeb $dist $_packages
+}
+
+add_install_packages () {
+	_archive=$1; shift
+	_packages=$@
+	reprepro -b $_archive --section auto-install includedeb $dist $_packages
 }
 
 exec >/dev/null
 temp_archive=$(mktemp -d --tmpdir $(basename $0).XXXXXXXXXX)/archive
 trap "rm -rf $(dirname $temp_archive)" EXIT
 init_archive $temp_archive
-add_packages $temp_archive $PACKAGES
-genisoimage -quiet -o $OUTPUT -V "APT package source" -r \
+test -n "$main" && add_main_packages $temp_archive $main
+test -n "$install" && add_install_packages $temp_archive $install
+genisoimage -quiet -o $output -V "APT package repository" -r \
 	$(dirname $temp_archive)
